@@ -8,8 +8,6 @@
 </template>
 
 <style>
-@reference "assets/css/main.css";
-
 body {
     /* background-image: linear-gradient(to bottom right, black, yellow); */
     @apply bg-cover bg-fixed text-indigo-300;

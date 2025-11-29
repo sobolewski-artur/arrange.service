@@ -1,4 +1,5 @@
 import { getApp, initializeApp } from "firebase/app"
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check"
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from "firebase/firestore"
 
 export default defineNuxtPlugin(() => {
@@ -13,4 +14,5 @@ export default defineNuxtPlugin(() => {
     }
     initializeApp(firebaseConfig)
     initializeFirestore(getApp(),{ localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) });
+    // initializeAppCheck(getApp(), {provider: new ReCaptchaV3Provider("6LcgRBosAAAAALJPe64q3yCO2JE1rzatXYdf33No"), isTokenAutoRefreshEnabled: true })
 })
