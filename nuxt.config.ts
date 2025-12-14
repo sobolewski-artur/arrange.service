@@ -10,6 +10,6 @@ export default defineNuxtConfig({
       { code: 'en', name: 'English', file: 'en.json' },
       { code: 'pl', name: 'Polish', file: 'pl.json' }
     ],
-    strategy: "prefix_except_default"
+    strategy: "no_prefix"
   }
 })

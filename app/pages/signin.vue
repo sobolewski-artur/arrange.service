@@ -1,5 +1,7 @@
 <script setup>
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+const localePath = useLocalePath()
+const user = useState('user')
 
 const state = reactive({
   email: '',
@@ -7,18 +9,18 @@ const state = reactive({
 })
 
 async function onSubmit() {
-  console.log(`Login submited ${state.email} + ${state.password}`)
   const result = await signInWithEmailAndPassword(getAuth(), state.email, state.password)
-  // if(result) console.log(result.user)
+  if(result.user) user.value = result.user
+  if(result.user) navigateTo(localePath('/home'))
 }
 </script>
 
 <template>
-  <form class="mt-48" @submit.prevent="onSubmit">
+  <form class="flex flex-col" @submit.prevent="onSubmit">
     <label>Email:</label>
-    <input name="email" v-model="state.email"></input>
+    <input type="email" name="email" v-model="state.email"></input>
     <label>Password:</label>
-    <input name="password" v-model="state.password"></input>
+    <input type="password" name="password" v-model="state.password"></input>
     <button type="submit">Log in</button>
   </form>
 </template>

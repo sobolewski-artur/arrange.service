@@ -1,3 +1,13 @@
 {
-    "greting": "Witaj świecie"
+    "greting": "Hello world!",
+    "home-btn": "Główna",
+    "search-btn": "Szukaj",
+    "notifications-btn": "Notyfikacje",
+    "messages-btn": "Wiadomości",
+    "settings-btn": "Ustawienia",
+    "profile-btn": "Profil",
+    "signin-btn": "Zaloguj się",
+    "signup-btn": "Utwórz konto",
+    "signout-btn": "Wyloguj się",
+    "placeholder-home": "Napisz czego oczekujesz od specjalisty."
 }

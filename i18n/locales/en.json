@@ -1,3 +1,13 @@
 {
-    "greting": "Hello world!"
+    "greting": "Hello world!",
+    "home-btn": "Home",
+    "search-btn": "Search",
+    "notifications-btn": "Notifications",
+    "messages-btn": "Messages",
+    "settings-btn": "Settings",
+    "profile-btn": "Profile",
+    "signin-btn": "Sign in",
+    "signup-btn": "Sign up",
+    "signout-btn": "Sign out",
+    "placeholder-home": "Wright what you want from specialists."
 }

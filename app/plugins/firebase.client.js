@@ -1,5 +1,6 @@
 import { getApp, initializeApp } from "firebase/app"
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check"
+import { onAuthStateChanged, getAuth } from "firebase/auth"
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from "firebase/firestore"
 
 export default defineNuxtPlugin(() => {
@@ -12,7 +13,10 @@ export default defineNuxtPlugin(() => {
         appId: "1:320709279280:web:501c5b616cdec7b48c37f5",
         measurementId: "G-0PVZ8ZW0G9"
     }
+
+    const user = useState('user')
     initializeApp(firebaseConfig)
     initializeFirestore(getApp(),{ localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) });
     // initializeAppCheck(getApp(), {provider: new ReCaptchaV3Provider("6LcgRBosAAAAALJPe64q3yCO2JE1rzatXYdf33No"), isTokenAutoRefreshEnabled: true })
+    onAuthStateChanged(getAuth(), (u) => user.value = u)
 })

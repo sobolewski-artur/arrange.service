@@ -30,12 +30,14 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <h1>Hello from About page!</h1>
-    <h2>{{ t("greting") }}</h2>
-    <button @click="addData">Add data to database</button>
-    <ul>
-        <li v-for="{id, name, surname} in data" :key="id">name: {{ name }} surname: {{ surname }} <button @click="deleteDocument(id)" >Delete</button> </li>
-    </ul>
+    <div>
+        <h1>Hello from About page!</h1>
+        <h2>{{ t("greting") }}</h2>
+        <button @click="addData">Add data to database</button>
+        <ul>
+            <li v-for="{id, name, surname} in data" :key="id">name: {{ name }} surname: {{ surname }} <button @click="deleteDocument(id)" >Delete</button> </li>
+        </ul>
+    </div>
 </template>
 
 <style>
