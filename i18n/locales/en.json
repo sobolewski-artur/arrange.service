@@ -9,5 +9,10 @@
     "signin-btn": "Sign in",
     "signup-btn": "Sign up",
     "signout-btn": "Sign out",
-    "placeholder-home": "Wright what you want from specialists."
+    "placeholder-home": "Wright what you want from specialists.",
+    "signout": {
+        "modal-title": "Are you sure you want to sign out?",
+        "btn-confirm": "Yes",
+        "btn-abort": "No"
+    }
 }

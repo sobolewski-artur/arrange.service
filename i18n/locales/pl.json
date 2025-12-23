@@ -2,12 +2,17 @@
     "greting": "Hello world!",
     "home-btn": "Główna",
     "search-btn": "Szukaj",
-    "notifications-btn": "Notyfikacje",
+    "notifications-btn": "Powiadomienia",
     "messages-btn": "Wiadomości",
     "settings-btn": "Ustawienia",
     "profile-btn": "Profil",
     "signin-btn": "Zaloguj się",
     "signup-btn": "Utwórz konto",
     "signout-btn": "Wyloguj się",
-    "placeholder-home": "Napisz czego oczekujesz od specjalisty."
+    "placeholder-home": "Napisz czego oczekujesz od specjalisty.",
+    "signout": {
+        "modal-title": "Czy napewno chcesz się wylogować?",
+        "btn-confirm": "Tak",
+        "btn-abort": "Nie"
+    }
 }

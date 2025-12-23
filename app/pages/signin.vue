@@ -22,5 +22,6 @@ async function onSubmit() {
     <label>Password:</label>
     <input type="password" name="password" v-model="state.password"></input>
     <button type="submit">Log in</button>
+    <NuxtLink to="/signup">Sign up</NuxtLink>
   </form>
 </template>

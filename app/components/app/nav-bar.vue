@@ -4,9 +4,12 @@ const localePath = useLocalePath()
 const { t } = useI18n()
 const route = useRoute()
 const user = useState('user')
+const show = ref(false)
+
 
 function logOut() {
     signOut(getAuth())
+    show.value = false
 }
 </script>
 
@@ -46,12 +49,29 @@ function logOut() {
         </div>
         <div>
             <NuxtLink v-if="!user" class="nav-bar-link" :to="localePath('/signin')">
+                <icon v-if="route.fullPath.split('/')[1] !== 'signin'" name="clarity:sign-in-line"></icon>
+                <icon v-if="route.fullPath.split('/')[1] === 'signin'" name="clarity:sign-in-solid"></icon>
                 <span class="btn-name">{{ t('signin-btn') }}</span>
             </NuxtLink>
-            <NuxtLink v-if="user" class="nav-bar-link" @click="logOut" :to="localePath('/signin')">
+            <NuxtLink v-if="user" class="nav-bar-link" @click="show = true">
+                <icon v-if="route.fullPath.split('/')[1] !== 'signin'" name="clarity:sign-out-line"></icon>
+                <icon v-if="route.fullPath.split('/')[1] === 'signin'" name="clarity:sign-out-solid"></icon>
                 <span class="btn-name">{{ t('signout-btn') }}</span>
             </NuxtLink>
         </div>
+        <Teleport to="body">
+            <Transition name="modal">
+                <LayoutModalBg v-if="show">
+                    <LayoutFrame>
+                        <h2>{{ t('signout.modal-title') }}</h2>
+                        <div class="mt-6 flex gap-10">
+                            <LayoutButton @click="show = false">{{ t('signout.btn-abort') }}</LayoutButton>
+                            <NuxtLink @click="logOut" :to="localePath('/signin')"><LayoutButton>{{ t('signout.btn-confirm') }}</LayoutButton></NuxtLink>
+                        </div>
+                    </LayoutFrame>
+                </LayoutModalBg>
+            </Transition>
+        </Teleport>
     </nav>
 </template>
 
@@ -59,7 +79,6 @@ function logOut() {
 .nav-bar-link {
     @apply text-4xl lg:text-2xl flex gap-1 items-center p-2 hover:border-b-indigo-600 hover:text-indigo-600
 }
-
 .btn-name {
     @apply hidden lg:flex
 }
