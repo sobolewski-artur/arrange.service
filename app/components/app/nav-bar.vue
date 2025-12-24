@@ -4,12 +4,13 @@ const localePath = useLocalePath()
 const { t } = useI18n()
 const route = useRoute()
 const user = useState('user')
-const show = ref(false)
+const showLogout = ref(false)
+const showPost = ref(false)
 
 
 function logOut() {
     signOut(getAuth())
-    show.value = false
+    showLogout.value = false
 }
 </script>
 
@@ -46,6 +47,11 @@ function logOut() {
                 <icon v-if="route.fullPath.split('/')[1] === 'profile'" name="iconamoon:profile-fill"></icon>
                 <span class="btn-name" >{{ t('profile-btn') }}</span>
             </NuxtLink>
+            <NuxtLink class="nav-bar-link" @click="showPost = true">
+                <icon v-if="!showPost" name="icon-park-outline:write"></icon>
+                <icon v-if="showPost" name="icon-park-solid:write"></icon>
+                <span class="btn-name">{{ t('post-btn') }}</span>
+            </NuxtLink>
         </div>
         <div>
             <NuxtLink v-if="!user" class="nav-bar-link" :to="localePath('/signin')">
@@ -53,23 +59,28 @@ function logOut() {
                 <icon v-if="route.fullPath.split('/')[1] === 'signin'" name="clarity:sign-in-solid"></icon>
                 <span class="btn-name">{{ t('signin-btn') }}</span>
             </NuxtLink>
-            <NuxtLink v-if="user" class="nav-bar-link" @click="show = true">
-                <icon v-if="route.fullPath.split('/')[1] !== 'signin'" name="clarity:sign-out-line"></icon>
-                <icon v-if="route.fullPath.split('/')[1] === 'signin'" name="clarity:sign-out-solid"></icon>
+            <NuxtLink v-if="user" class="nav-bar-link" @click="showLogout = true">
+                <icon v-if="!showLogout" name="clarity:sign-out-line"></icon>
+                <icon v-if="showLogout" name="clarity:sign-out-solid"></icon>
                 <span class="btn-name">{{ t('signout-btn') }}</span>
             </NuxtLink>
         </div>
         <Teleport to="body">
             <Transition name="modal">
-                <LayoutModalBg v-if="show">
+                <LayoutModalBg v-if="showLogout">
                     <LayoutFrame>
                         <h2>{{ t('signout.modal-title') }}</h2>
                         <div class="mt-6 flex gap-10">
-                            <LayoutButton @click="show = false">{{ t('signout.btn-abort') }}</LayoutButton>
+                            <LayoutButton @click="showLogout = false">{{ t('signout.btn-abort') }}</LayoutButton>
                             <NuxtLink @click="logOut" :to="localePath('/signin')"><LayoutButton>{{ t('signout.btn-confirm') }}</LayoutButton></NuxtLink>
                         </div>
                     </LayoutFrame>
                 </LayoutModalBg>
+            </Transition>
+        </Teleport>
+        <Teleport to="body">
+            <Transition name="modal">
+                <AppPost v-if="showPost" @OnClosePost="showPost = false"></AppPost>
             </Transition>
         </Teleport>
     </nav>
