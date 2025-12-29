@@ -15,7 +15,7 @@ function logOut() {
 </script>
 
 <template>
-    <nav class="flex flex-col justify-between sticky top-0 border-r-2 h-screen">
+    <nav class="flex flex-col justify-between sticky top-0 bottom-0 border-r-2 h-screen">
         <div>
             <NuxtLink class="nav-bar-link" :to="localePath('/home')">
                 <icon v-if="route.fullPath.split('/')[1] !== 'home'" name="icon-park-outline:home"></icon>
@@ -47,7 +47,7 @@ function logOut() {
                 <icon v-if="route.fullPath.split('/')[1] === 'profile'" name="iconamoon:profile-fill"></icon>
                 <span class="btn-name" >{{ t('profile-btn') }}</span>
             </NuxtLink>
-            <NuxtLink class="nav-bar-link" @click="showPost = true">
+            <NuxtLink class="nav-bar-link" :to="localePath('/post')">
                 <icon v-if="!showPost" name="icon-park-outline:write"></icon>
                 <icon v-if="showPost" name="icon-park-solid:write"></icon>
                 <span class="btn-name">{{ t('post-btn') }}</span>
@@ -76,11 +76,6 @@ function logOut() {
                         </div>
                     </LayoutFrame>
                 </LayoutModalBg>
-            </Transition>
-        </Teleport>
-        <Teleport to="body">
-            <Transition name="modal">
-                <AppPost v-if="showPost" @OnClosePost="showPost = false"></AppPost>
             </Transition>
         </Teleport>
     </nav>

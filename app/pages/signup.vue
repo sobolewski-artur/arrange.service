@@ -1,6 +1,7 @@
 <script setup>
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 const localePath = useLocalePath()
+const { t } = useI18n()
 
 const user = useState('user')
 
@@ -19,14 +20,23 @@ async function onSubmit() {
 </script>
 
 <template>
-  <form class="flex flex-col" @submit.prevent="onSubmit">
-    <label>Email:</label>
-    <input type="email" name="email" v-model="state.email"></input>
-    <label>Password:</label>
-    <input type="password" name="password" v-model="state.password"></input>
-    <label>Reapeat password:</label>
-    <input type="password" name="password" v-model="state.password2"></input>
-    <button type="submit">Log in</button>
+  <form class="flex flex-col gap-4" @submit.prevent="onSubmit">
+    <div class="flex flex-col">
+      <label>Email:</label>
+      <input type="email" placeholder="Email" name="email" v-model="state.email"></input>
+    </div>
+    <div class="flex flex-col">
+      <label>Password:</label>
+      <input type="password" placeholder="Password" name="password" v-model="state.password"></input>
+    </div>
+    <div class="flex flex-col">
+      <label>Reapeat password:</label>
+      <input type="password" placeholder="Reapeat password" name="password" v-model="state.password2"></input>
+    </div>
+    <div class="mt-6 flex gap-4">
+      <LayoutButton type="submit">{{ t('signup-btn') }}</LayoutButton>
+      <NuxtLink to="/signin"><LayoutButton>{{ t('signin-btn') }}</LayoutButton></NuxtLink>
+    </div>
   </form>
 </template>
 
