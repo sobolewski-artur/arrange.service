@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   modules: ['@nuxtjs/i18n', '@nuxt/icon', '@nuxtjs/tailwindcss'],
-  css: ['~/assets/css/main.css'],
+  css: ['~/assets/css/main.css', 'ol/ol.css'],
   i18n: {
     defaultLocale: 'en',
     locales: [
