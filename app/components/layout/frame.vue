@@ -1,5 +1,5 @@
 <template>
-    <div class="modal_inner p-5 rounded-lg flex flex-col items-center shadow-lg">
+    <div class="modal_inner p-5 rounded-lg flex flex-col shadow-lg">
         <slot />
     </div>
 </template>
