@@ -41,18 +41,12 @@ function onShowLogout() {
             <LayoutNavButton v-if="!user" :to="localePath('/signin')" :showSolid="signin" icon1="clarity:sign-in-line" icon2="clarity:sign-in-solid">{{ t('signin-btn') }}</LayoutNavButton>
             <LayoutNavButton v-if="user" @click="showSignout = true" :to="localePath('/signout')" :showSolid="showSignout" icon1="clarity:sign-out-line" icon2="clarity:sign-out-solid">{{ t('signout-btn') }}</LayoutNavButton>
         </div>
-        <Teleport to="body">
-            <Transition name="modal">
-                <LayoutModalBg v-if="showSignout" @click.self="onShowLogout">
-                    <LayoutFrame>
-                        <h2>{{ t('signout.modal-title') }}</h2>
-                        <div class="mt-6 flex gap-10">
-                            <LayoutButton @click="onShowLogout">{{ t('signout.btn-abort') }}</LayoutButton>
-                            <NuxtLink @click="logOut" :to="localePath('/signin')"><LayoutButton>{{ t('signout.btn-confirm') }}</LayoutButton></NuxtLink>
-                        </div>
-                    </LayoutFrame>
-                </LayoutModalBg>
-            </Transition>
-        </Teleport>
+        <LayoutModal :onShow="showSignout" @on-close="onShowLogout">
+            <h2>{{ t('signout.modal-title') }}</h2>
+            <div class="mt-6 flex gap-10">
+                <LayoutButton @click="onShowLogout">{{ t('signout.btn-abort') }}</LayoutButton>
+                <NuxtLink @click="logOut" :to="localePath('/signin')"><LayoutButton>{{ t('signout.btn-confirm') }}</LayoutButton></NuxtLink>
+            </div>
+        </LayoutModal>
     </nav>
 </template>
