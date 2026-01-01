@@ -40,7 +40,7 @@ onMounted(() => {
                     zoom: 15
                 })
             });
-
+            map.addLayer(setPoint(fromLonLat([data.value.longitude, data.value.latitude])))
             map.on('click', (e) => {
                 map.getLayers().forEach(layer => {
                     if (layer.get('name') && layer.get('name') === 'punkt') {
