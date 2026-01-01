@@ -16,11 +16,13 @@ import Stroke from 'ol/style/Stroke.js';
 import VectorLayer from 'ol/layer/Vector.js';
 import { geohashForLocation } from 'geofire-common'
 
-const data = ref({ description: '', title: '', latitude: '', longitude: '', geohash: '' })
+const data = ref({ description: '', tags: [], title: '', latitude: '', longitude: '', geohash: '' })
 const { t } = useI18n()
+const router = useRouter()
+const showMap = ref(false)
+let map
 
-onMounted(() => {
-    let map
+function selectLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((sucess) => {
             const lat = sucess.coords.latitude
@@ -57,8 +59,12 @@ onMounted(() => {
     } else {
         x.innerHTML = "Geolocation is not supported by this browser.";
     }
+}
 
-})
+function onShowMap() {
+    showMap.value = true
+    selectLocation()
+}
 
 function setPoint(coordinates) { // Example coordinates
     const pointGeometry = new Point(coordinates);
@@ -85,35 +91,42 @@ function setPoint(coordinates) { // Example coordinates
 }
 
 async function onSubmit() {
-    const result = await addDoc(collection(getFirestore(), "posts"), data.value).catch(e => { console.log(e.message)})
-    console.log(result)
+    const result = await addDoc(collection(getFirestore(), "posts"), data.value).catch(e => { console.log(e.message) })
+    if(result) router.push('/home')
 }
 </script>
 
 <template>
     <form class="flex flex-col gap-4" @submit.prevent="onSubmit">
+        <LayoutButton type="button" class="text-2xl flex justify-center items-center" @click="selectLocation">
+            <icon name="mi:location"></icon>
+            <span>Get your position: {{ data.geohash ? "Done" : "" }}</span>
+        </LayoutButton>
+        <LayoutModal :onShow="showMap" @on-close="showMap = false">
+            <div class="flex flex-col gap-4">
+                <h2>Click to adjust position:</h2>
+                <div class="h-96 w-96" id="map"></div>
+                <LayoutButton type="button" @click="showMap = false">Close</LayoutButton>
+            </div>
+        </LayoutModal>
+        <LayoutButton type="button" @click="onShowMap" class="text-2xl flex justify-center items-center">
+            <icon class="text-4xl" name="material-symbols-light:map-search-outline-sharp"></icon>
+            <span>Show map</span>
+        </LayoutButton>
         <div>
             <label>Title:</label>
             <input class="w-full" type="text" placeholder="Title" v-model="data.title" />
-        </div>
-        <div class="flex gap-2 items-center" @click="getLocation">
-            <icon class="text-4xl" name="mi:location"></icon>
-            <label>Coordinates:</label>
-            <label>latitude:</label>{{ data.latitude }}
-            <label>longitude:</label>{{ data.longitude }}
-            <label>geohash:</label>{{ data.geohash }}
-        </div>
-        <div id="map" :style="{ width: '400px', height: '400px' }"></div>
-        <div>
-            <icon class="text-4xl" name="material-symbols-light:map-search-outline-sharp"></icon>
-            <icon class="text-4xl" name="material-symbols-light:map-search-rounded"></icon>
         </div>
         <div>
             <label>Description:</label>
             <textarea class="w-full" type="textarea" v-bind:placeholder="t('placeholder-home')"
                 v-model="data.description" />
         </div>
-        <div class="flex gap-4">
+        <div>
+            <label>Tags:</label>
+            <input class="w-full" type="text" placeholder="Select tags" v-model="data.tags" />
+        </div>
+        <div class="mt-4">
             <LayoutButton>{{ t('post-btn') }}</LayoutButton>
         </div>
     </form>
@@ -121,7 +134,7 @@ async function onSubmit() {
 
 <style>
 /* #map {
-    width: 400px;
-    height: 300px;
+    width: 100vw;
+    height: 450px;
 } */
 </style>
