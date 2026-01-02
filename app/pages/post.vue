@@ -16,7 +16,7 @@ import Stroke from 'ol/style/Stroke.js';
 import VectorLayer from 'ol/layer/Vector.js';
 import { geohashForLocation } from 'geofire-common'
 
-const data = ref({ description: '', tags: [], title: '', latitude: '', longitude: '', geohash: '' })
+const data = ref({ description: '', tags: '', title: '', latitude: '', longitude: '', geohash: '' })
 const { t } = useI18n()
 const router = useRouter()
 const showMap = ref(false)
@@ -93,6 +93,8 @@ function setPoint(coordinates) { // Example coordinates
 }
 
 async function onSubmit() {
+    data.value.tags = data.value.tags.toLocaleLowerCase()
+    data.value.tags = data.value.tags.split(' ')
     const result = await addDoc(collection(getFirestore(), "posts"), {...data.value, owner: user.value.uid }).catch(e => { console.log(e.message) })
     if(result) router.push('/home')
 }
@@ -100,33 +102,33 @@ async function onSubmit() {
 
 <template>
     <form class="flex flex-col gap-4" @submit.prevent="onSubmit">
-        <LayoutButton type="button" class="text-2xl flex justify-center items-center" @click="selectLocation">
+        <LayoutButton type="button" class="text-xl flex justify-center items-center" @click="selectLocation">
             <icon name="mi:location"></icon>
-            <span>Get your position: {{ data.geohash ? "Done" : "" }}</span>
+            <span>{{t('post-get-position') }} {{ data.geohash ? t('post-done') : "" }}</span>
         </LayoutButton>
         <LayoutModal :onShow="showMap" @on-close="showMap = false">
             <div class="flex flex-col gap-4">
-                <h2>Click to adjust position:</h2>
+                <h2>{{ t('post-adjust-position') }}</h2>
                 <div class="h-96 w-96" id="map"></div>
-                <LayoutButton type="button" @click="showMap = false">Close</LayoutButton>
+                <LayoutButton type="button" @click="showMap = false">{{ t('post-close') }}</LayoutButton>
             </div>
         </LayoutModal>
-        <LayoutButton type="button" @click="onShowMap" class="text-2xl flex justify-center items-center">
+        <LayoutButton type="button" @click="onShowMap" class="text-xl flex justify-center items-center">
             <icon class="text-4xl" name="material-symbols-light:map-search-outline-sharp"></icon>
-            <span>Show map</span>
+            <span>{{ t('post-show-map') }}</span>
         </LayoutButton>
         <div>
-            <label>Title:</label>
-            <input class="w-full" type="text" placeholder="Title" v-model="data.title" />
+            <label>{{ t('post-title') }}</label>
+            <input class="w-full" type="text" v-bind:placeholder="t('post-placeholder-title')" v-model="data.title" />
         </div>
         <div>
-            <label>Description:</label>
-            <textarea class="w-full" type="textarea" v-bind:placeholder="t('placeholder-home')"
+            <label>{{ t('post-description') }}</label>
+            <textarea class="w-full" type="textarea" v-bind:placeholder="t('post-placeholder-description')"
                 v-model="data.description" />
         </div>
         <div>
-            <label>Tags:</label>
-            <input class="w-full" type="text" placeholder="Select tags" v-model="data.tags" />
+            <label>{{ t('post-tags') }}</label>
+            <input class="w-full" type="text" v-bind:placeholder="t('post-placeholder-tags')" v-model="data.tags" />
         </div>
         <div class="mt-4">
             <LayoutButton>{{ t('post-btn') }}</LayoutButton>

@@ -34,15 +34,16 @@ onMounted(async () => {
             })
         }
     })
-    // result.forEach(doc => {
-    //     posts.value.push({ ...doc.data(), id: doc.id })
-    // })
-    // if (result) console.log(result)
 })
 
 function onDeleteDoc(id) {
     deleteDoc(doc(getFirestore(), 'posts', id))
 }
+
+onUnmounted(() => {
+    authUnsub()
+    unsub()
+})
 </script>
 
 <template>
