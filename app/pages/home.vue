@@ -1,46 +1,57 @@
 <script setup>
-import { collection, query, orderBy, startAt, endAt, getDocs, getFirestore } from 'firebase/firestore';
+import { ref } from 'vue'
+import { onAuthStateChanged, getAuth } from 'firebase/auth';
+import { collection, query, where, deleteDoc, doc, orderBy, startAt, endAt, getDocs, getFirestore, onSnapshot } from 'firebase/firestore';
 import { geohashForLocation, geohashQueryBounds } from 'geofire-common';
 
-const lat = 51.5074;
-const lng = 0.1278;
-const hash = geohashForLocation([lat, lng]);
+const user = useState('user')
+const posts = ref([])
+let unsub
+let authUnsub
+// const lat = 51.5074;
+// const lng = 0.1278;
+// const hash = geohashForLocation([lat, lng]);
 
-const center = [51.5074, 0.1278];
-const radiusInM = 1 * 1000;
+// const center = [51.5074, 0.1278];
+// const radiusInM = 1 * 1000;
 
-const bounds = geohashQueryBounds(center, radiusInM);
+// const bounds = geohashQueryBounds(center, radiusInM);
 
 onMounted(async () => {
-    const promises = [];
-    for (const b of bounds) {
-        const q = query(
-            collection(getFirestore(), 'cities'),
-            orderBy('geohash'),
-            startAt(b[0]),
-            endAt(b[1])
-        );
-
-        promises.push(getDocs(q));
-    }
-    const snapshots = await Promise.all(promises);
-
-    const matchingDocs = [];
-    for (const snap of snapshots) {
-        for (const doc of snap.docs) {
-            const lat = doc.get('lat');
-            const lng = doc.get('lng');
-
-            const distanceInKm = geofire.distanceBetween([lat, lng], center);
-            const distanceInM = distanceInKm * 1000;
-            if (distanceInM <= radiusInM) {
-                matchingDocs.push(doc);
-            }
+    authUnsub = onAuthStateChanged(getAuth(), (u) => {
+        if(u) {
+            const q = query(
+                collection(getFirestore(), 'posts'),
+                where('owner', '==', `${user.value.uid}`)
+            );
+        
+            // const result = await getDocs(q);
+            unsub = onSnapshot(q, docs => {
+                posts.value = []
+                docs.forEach(doc => {
+                    posts.value.push({ ...doc.data(), id: doc.id })
+                })
+            })
         }
-    }
+    })
+    // result.forEach(doc => {
+    //     posts.value.push({ ...doc.data(), id: doc.id })
+    // })
+    // if (result) console.log(result)
 })
+
+function onDeleteDoc(id) {
+    deleteDoc(doc(getFirestore(), 'posts', id))
+}
 </script>
 
 <template>
-    <h1>Hello from home page</h1>
+    <div class="flex flex-col gap-4">
+        <div class="flex gap-4 items-center" v-for="post in posts">
+            <LayoutButton @click="onDeleteDoc(post.id)">Delete</LayoutButton>
+            <h2>{{ post.title }}</h2>
+            <p>{{ post.description }}</p>
+            <span>{{ post.geohash }}</span>
+        </div>
+    </div>
 </template>

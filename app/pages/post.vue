@@ -20,6 +20,8 @@ const data = ref({ description: '', tags: [], title: '', latitude: '', longitude
 const { t } = useI18n()
 const router = useRouter()
 const showMap = ref(false)
+const user = useState('user')
+
 let map
 
 function selectLocation() {
@@ -91,7 +93,7 @@ function setPoint(coordinates) { // Example coordinates
 }
 
 async function onSubmit() {
-    const result = await addDoc(collection(getFirestore(), "posts"), data.value).catch(e => { console.log(e.message) })
+    const result = await addDoc(collection(getFirestore(), "posts"), {...data.value, owner: user.value.uid }).catch(e => { console.log(e.message) })
     if(result) router.push('/home')
 }
 </script>
