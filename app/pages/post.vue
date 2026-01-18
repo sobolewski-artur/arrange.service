@@ -1,5 +1,6 @@
 <script setup>
 import { collection, getFirestore, addDoc } from 'firebase/firestore';
+import { ref } from 'vue';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
@@ -16,7 +17,7 @@ import Stroke from 'ol/style/Stroke.js';
 import VectorLayer from 'ol/layer/Vector.js';
 import { geohashForLocation } from 'geofire-common'
 
-const data = ref({ description: '', tags: '', title: '', latitude: '', longitude: '', geohash: '' })
+const data = ref({ description: '', tags: '', title: '', latitude: 52.06487921469221, longitude: 19.10129755928651, geohash: '' })
 const { t } = useI18n()
 const router = useRouter()
 const showMap = ref(false)
@@ -42,6 +43,32 @@ function selectLocation() {
                 view: new View({
                     center: fromLonLat([data.value.longitude, data.value.latitude]),
                     zoom: 15
+                })
+            });
+            map.addLayer(setPoint(fromLonLat([data.value.longitude, data.value.latitude])))
+            map.on('click', (e) => {
+                map.getLayers().forEach(layer => {
+                    if (layer.get('name') && layer.get('name') === 'punkt') {
+                        map.removeLayer(layer)
+                    }
+                })
+                const cords = toLonLat(e.coordinate)
+                data.value.latitude = cords[1]
+                data.value.longitude = cords[0]
+                data.value.geohash = geohashForLocation([cords[1], cords[0]])
+                map.addLayer(setPoint(e.coordinate))
+            })
+        }, (error) => {
+            map = new Map({
+                target: 'map',
+                layers: [
+                    new TileLayer({
+                        source: new OSM()
+                    })
+                ],
+                view: new View({
+                    center: fromLonLat([data.value.longitude, data.value.latitude]),
+                    zoom: 5.5
                 })
             });
             map.addLayer(setPoint(fromLonLat([data.value.longitude, data.value.latitude])))
@@ -95,17 +122,13 @@ function setPoint(coordinates) { // Example coordinates
 async function onSubmit() {
     data.value.tags = data.value.tags.toLocaleLowerCase()
     data.value.tags = data.value.tags.split(' ')
-    const result = await addDoc(collection(getFirestore(), "posts"), {...data.value, owner: user.value.uid }).catch(e => { console.log(e.message) })
-    if(result) router.push('/home')
+    const result = await addDoc(collection(getFirestore(), "posts"), { ...data.value, owner: user.value.uid }).catch(e => { console.log(e.message) })
+    if (result) router.push('/home')
 }
 </script>
 
 <template>
     <form class="flex flex-col gap-4" @submit.prevent="onSubmit">
-        <LayoutButton type="button" class="text-xl flex justify-center items-center" @click="selectLocation">
-            <icon name="mi:location"></icon>
-            <span>{{t('post-get-position') }} {{ data.geohash ? t('post-done') : "" }}</span>
-        </LayoutButton>
         <LayoutModal :onShow="showMap" @on-close="showMap = false">
             <div class="flex flex-col gap-4">
                 <h2>{{ t('post-adjust-position') }}</h2>
@@ -115,7 +138,7 @@ async function onSubmit() {
         </LayoutModal>
         <LayoutButton type="button" @click="onShowMap" class="text-xl flex justify-center items-center">
             <icon class="text-4xl" name="material-symbols-light:map-search-outline-sharp"></icon>
-            <span>{{ t('post-show-map') }}</span>
+            <span>{{ t('post-get-position') }}</span>
         </LayoutButton>
         <div>
             <label>{{ t('post-title') }}</label>
@@ -135,10 +158,3 @@ async function onSubmit() {
         </div>
     </form>
 </template>
-
-<style>
-/* #map {
-    width: 100vw;
-    height: 450px;
-} */
-</style>

@@ -47,12 +47,13 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="flex flex-col gap-4">
-        <div class="flex gap-4 items-center" v-for="post in posts">
-            <LayoutButton @click="onDeleteDoc(post.id)">Delete</LayoutButton>
-            <h2>{{ post.title }}</h2>
-            <p>{{ post.description }}</p>
-            <span>{{ post.geohash }}</span>
-        </div>
+    <div class="flex flex-col gap-2">
+        <NuxtLink class="border-2 rounded-lg p-2" v-for="post in posts" :key="post.id" :to="`/p/${post.id}`" >
+            <div>
+                <h2>{{ truncate(post.title, 100) }}</h2>
+                <p>{{ truncate(post.description, 100) }}</p>
+                <p>{{ post.tags }}</p>
+            </div>
+        </NuxtLink>
     </div>
 </template>
