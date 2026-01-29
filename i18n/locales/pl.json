@@ -1,0 +1,28 @@
+{
+    "greting": "Hello world!",
+    "home-btn": "Główna",
+    "search-btn": "Szukaj",
+    "notifications-btn": "Powiadomienia",
+    "messages-btn": "Wiadomości",
+    "settings-btn": "Ustawienia",
+    "profile-btn": "Profil",
+    "signin-btn": "Zaloguj się",
+    "placeholder-email": "Email adres",
+    "placeholder-password": "Hasło",
+    "placeholder-repeat-password": "Powtórz hasło",
+    "signup-btn": "Utwórz konto",
+    "signout-btn": "Wyloguj się",
+    "post-btn": "Post",
+    "post": {
+        "city-input": "Miasto:",
+        "title-input": "Tytuł:",
+        "textarea-input": "Napisz czego oczekujesz od specjalisty:",
+        "tags-input": "Tagi:",
+        "btn": "Zapisz"
+    },
+    "signout": {
+        "modal-title": "Czy napewno chcesz się wylogować?",
+        "btn-confirm": "Tak",
+        "btn-abort": "Nie"
+    }
+}
