@@ -2,6 +2,8 @@
 import 'slpy/dist/css/slpy-style.css'
 import { slpy } from 'slpy'
 import { addDoc, collection, getFirestore } from 'firebase/firestore'
+import { geohashForLocation } from 'geofire-common'
+
 const { t } = useI18n()
 
 const items = ref([
@@ -44,7 +46,8 @@ onMounted(() => {
     limit: 8
   },
     function (returnInput, selectedItem) {
-      state.value = selectedItem
+      const geohash = geohashForLocation([selectedItem.lat, selectedItem.lon])
+      state.value = { ...selectedItem, geohash }
     }
   )
 })
@@ -56,6 +59,7 @@ watch(country, (newVal, oldVal) => {
 
 const user = useState('user')
 const router = useRouter()
+
 async function onSubmit() {
   const result = await addDoc(collection(getFirestore(), 'posts'), { ...state.value, owner: user.value.uid })
   if (result) router.push('/home')
