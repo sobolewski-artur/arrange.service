@@ -51,10 +51,10 @@ function onShowLogout() {
         </div>
         <div>
             <LayoutNavButton v-if="!user" :to="localePath('/signin')" :showSolid="signin" icon1="clarity:sign-in-line"
-                icon2="clarity:sign-in-solid">{{ t('signin-btn') }}</LayoutNavButton>
+                icon2="clarity:sign-in-solid">{{ t('sign.in-btn') }}</LayoutNavButton>
             <LayoutNavButton v-if="user" @click="showSignout = true" :to="localePath('/signout')"
                 :showSolid="showSignout" icon1="clarity:sign-out-line" icon2="clarity:sign-out-solid">{{
-                    t('signout-btn') }}</LayoutNavButton>
+                    t('sign.out-btn') }}</LayoutNavButton>
         </div>
     </nav>
     <LayoutModal :onShow="showSignout" @on-close="onShowLogout">
