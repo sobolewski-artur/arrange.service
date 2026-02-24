@@ -55,7 +55,7 @@ onMounted(() => {
       geohash
     }
   })
-  
+
 })
 
 
@@ -75,41 +75,14 @@ async function onSubmit() {
 
 <template>
   <form class="flex flex-col  gap-4" @submit.prevent="onSubmit">
-    <USelectMenu v-model="country" :items="items" size="xl" value-key="value" :icon="avatar" />
     <div>
-      <UInput id="formInput" size="xl" v-model="state.city" placeholder="" :ui="{ base: 'peer' }">
-        <label
-          class="pointer-events-none absolute left-0 -top-2.5 text-highlighted text-xs font-medium px-1.5 transition-all peer-focus:-top-2.5 peer-focus:text-highlighted peer-focus:text-xs peer-focus:font-medium peer-placeholder-shown:text-sm peer-placeholder-shown:text-dimmed peer-placeholder-shown:top-2.5 peer-placeholder-shown:font-normal">
-          <span class="inline-flex bg-default px-1">{{ t('post.city-input') }}</span>
-        </label>
-      </UInput>
-      <UInput size="xl" v-model="state.region" placeholder="" :ui="{ base: 'peer' }">
-        <label
-          class="pointer-events-none absolute left-0 -top-2.5 text-highlighted text-xs font-medium px-1.5 transition-all peer-focus:-top-2.5 peer-focus:text-highlighted peer-focus:text-xs peer-focus:font-medium peer-placeholder-shown:text-sm peer-placeholder-shown:text-dimmed peer-placeholder-shown:top-2.5 peer-placeholder-shown:font-normal">
-          <span class="inline-flex bg-default px-1">{{ t('post.region-input') }}</span>
-        </label>
-      </UInput>
+      <USelectMenu v-model="country" :items="items" size="xl" value-key="value" :icon="avatar" />
+      <FormInput v-model="state.city">{{ t('post.city-input') }}</FormInput>
+      <FormInput v-model="state.region">{{ t('post.region-input') }}</FormInput>
     </div>
-    <UInput v-model="state.title" type="text" size="xl" placeholder="" :ui="{ base: 'peer' }">
-      <label
-        class="pointer-events-none absolute left-0 -top-2.5 text-highlighted text-xs font-medium px-1.5 transition-all peer-focus:-top-2.5 peer-focus:text-highlighted peer-focus:text-xs peer-focus:font-medium peer-placeholder-shown:text-sm peer-placeholder-shown:text-dimmed peer-placeholder-shown:top-2.5 peer-placeholder-shown:font-normal">
-        <span class="inline-flex bg-default px-1">{{ t('post.title-input') }}</span>
-      </label>
-    </UInput>
-    <UTextarea size="xl" v-model="state.text" placeholder="" :ui="{ base: 'peer' }">
-      <label
-        class="pointer-events-none absolute left-0 -top-2.5 text-highlighted text-xs font-medium px-1.5 transition-all peer-focus:-top-2.5 peer-focus:text-highlighted peer-focus:text-xs peer-focus:font-medium peer-placeholder-shown:text-sm peer-placeholder-shown:text-dimmed peer-placeholder-shown:top-2.5 peer-placeholder-shown:font-normal">
-        <span class="inline-flex bg-default px-1">{{ t('post.textarea-input') }}</span>
-      </label>
-    </UTextarea>
-    <UInputTags v-model="state.tags" size="xl" placeholder="" :ui="{ base: 'peer' }">
-      <label
-        class="pointer-events-none absolute left-0 -top-2.5 text-highlighted text-xs font-medium px-1.5 transition-all peer-focus:-top-2.5 peer-focus:text-highlighted peer-focus:text-xs peer-focus:font-medium peer-placeholder-shown:text-sm peer-placeholder-shown:text-dimmed peer-placeholder-shown:top-2.5 peer-placeholder-shown:font-normal">
-        <span class="inline-flex bg-default px-1">{{ t('post.tags-input') }}</span>
-      </label>
-    </UInputTags>
+    <FormInput v-model="state.title">{{ t('post.title-input') }}</FormInput>
+    <FormTextarea v-model="state.text">{{ t('post.textarea-input') }}</FormTextarea>
+    <FormInputTags v-model="state.tags">{{ t('post.tags-input') }}</FormInputTags>
     <UButton type="submit">Submit</UButton>
   </form>
 </template>
-
-<style></style>

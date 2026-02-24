@@ -2,6 +2,7 @@
 import 'slpy/dist/css/slpy-style.css'
 import { slpy } from 'slpy'
 import { geohashForLocation } from 'geofire-common'
+import { formField } from '#build/ui'
 
 const { t } = useI18n()
 

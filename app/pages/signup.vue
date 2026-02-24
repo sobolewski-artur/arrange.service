@@ -1,70 +1,68 @@
-<script setup>
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-const localePath = useLocalePath()
-const { t } = useI18n()
-const show = ref(false)
+<script setup lang="ts">
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import type { FormError, FormErrorEvent, FormSubmitEvent } from '@nuxt/ui'
 
+const localePath = useLocalePath()
 const user = useState('user')
+const { t } = useI18n()
 
 const state = reactive({
-    displayName: '',
-    email: '',
-    password: '',
-    password2: ''
+  email: '',
+  password: '',
+  repeatPassword: '',
+  displayName: ''
 })
 
-async function onSubmit() {
-    if (!(state.password === state.password2)) return
-    const result = await createUserWithEmailAndPassword(getAuth(), state.email, state.password)
-    if (result.user) user.value = result.user
-    if (result.user) updateProfile(result.user, { displayName: state.displayName })
-    if (result.user) navigateTo(localePath('/home'))
+type Schema = typeof state
+
+function validate(state: Partial<Schema>): FormError[] {
+  const errors = []
+  if (!state.email) errors.push({ name: 'email', message: 'Required' })
+  if (!state.password) errors.push({ name: 'password', message: 'Required' })
+  if (!state.displayName) errors.push({ name: 'displayName', message: 'Required' })
+  if (state.password != state.repeatPassword) errors.push({name: 'repeatPassword' ,message: 'Password must be the same.'})
+  if (!state.repeatPassword) errors.push({name: 'repeatPassword' ,message: 'Required'})
+  return errors
+}
+
+const toast = useToast()
+async function onSubmit(event: FormSubmitEvent<Schema>) {
+    console.log(event)
+//   const result = await signInWithEmailAndPassword(getAuth(), state.email, state.password).catch((e) => { toast.add({ title: 'Error', description: e.message, color: 'error' }); return e })
+//   if (result.user) user.value = result.user
+//   if (result.user) toast.add({ title: 'Success', description: 'You are now signed in.', color: 'success' })
+//   if (result.user) navigateTo(localePath('/home'))
+}
+
+async function onError(event: FormErrorEvent) {
+  if (event?.errors?.[0]?.id) {
+    const element = document.getElementById(event.errors[0].id)
+    element?.focus()
+    element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
 }
 </script>
 
 <template>
-    <form class="flex flex-col  gap-4" @submit.prevent="onSubmit">
-        <UInput v-model="state.displayName" size="xl" placeholder=""
-            :ui="{ base: 'peer' }">
-            <label
-                class="pointer-events-none absolute left-0 -top-2.5 text-highlighted text-xs font-medium px-1.5 transition-all peer-focus:-top-2.5 peer-focus:text-highlighted peer-focus:text-xs peer-focus:font-medium peer-placeholder-shown:text-sm peer-placeholder-shown:text-dimmed peer-placeholder-shown:top-2.5 peer-placeholder-shown:font-normal">
-                <span class="inline-flex bg-default px-1">{{ t('sign.display-name') }}</span>
-            </label>
-        </UInput>
-        <UInput v-model="state.email" type="email" size="xl" trailing-icon="i-lucide-at-sign" placeholder=""
-            :ui="{ base: 'peer' }">
-            <label
-                class="pointer-events-none absolute left-0 -top-2.5 text-highlighted text-xs font-medium px-1.5 transition-all peer-focus:-top-2.5 peer-focus:text-highlighted peer-focus:text-xs peer-focus:font-medium peer-placeholder-shown:text-sm peer-placeholder-shown:text-dimmed peer-placeholder-shown:top-2.5 peer-placeholder-shown:font-normal">
-                <span class="inline-flex bg-default px-1">{{ t('sign.email') }}</span>
-            </label>
-        </UInput>
-        <UInput v-model="state.password" placeholder="" size="xl" :type="show ? 'text' : 'password'"
-            :ui="{ trailing: 'pe-1', base: 'peer' }">
-            <label
-                class="pointer-events-none absolute left-0 -top-2.5 text-highlighted text-xs font-medium px-1.5 transition-all peer-focus:-top-2.5 peer-focus:text-highlighted peer-focus:text-xs peer-focus:font-medium peer-placeholder-shown:text-sm peer-placeholder-shown:text-dimmed peer-placeholder-shown:top-2.5 peer-placeholder-shown:font-normal">
-                <span class="inline-flex bg-default px-1">{{ t('sign.password') }}</span>
-            </label>
-            <template #trailing>
-                <UButton color="neutral" variant="link" size="sm" :icon="show ? 'i-lucide-eye-off' : 'i-lucide-eye'"
-                    :aria-label="show ? 'Hide password' : 'Show password'" :aria-pressed="show" aria-controls="password"
-                    @click="show = !show" />
-            </template>
-        </UInput>
-        <UInput v-model="state.password2" placeholder="" size="xl" :type="show ? 'text' : 'password'"
-            :ui="{ trailing: 'pe-1', base: 'peer' }">
-            <label
-                class="pointer-events-none absolute left-0 -top-2.5 text-highlighted text-xs font-medium px-1.5 transition-all peer-focus:-top-2.5 peer-focus:text-highlighted peer-focus:text-xs peer-focus:font-medium peer-placeholder-shown:text-sm peer-placeholder-shown:text-dimmed peer-placeholder-shown:top-2.5 peer-placeholder-shown:font-normal">
-                <span class="inline-flex bg-default px-1">{{ t('sign.repeat') }}</span>
-            </label>
-            <template #trailing>
-                <UButton color="neutral" variant="link" size="sm" :icon="show ? 'i-lucide-eye-off' : 'i-lucide-eye'"
-                    :aria-label="show ? 'Hide password' : 'Show password'" :aria-pressed="show" aria-controls="password"
-                    @click="show = !show" />
-            </template>
-        </UInput>
-        <div class="flex gap-8 justify-center items-center">
-            <UButton type="submit">{{ t('sign.up-btn') }}</UButton>
-            <ULink raw to="/signin" active-class="font-bold" inactive-class="text-muted">{{ t('sign.in-btn') }}</ULink>
-        </div>
-    </form>
+  <UForm :validate="validate" :state="state" class="space-y-4" @submit="onSubmit" @error="onError">
+    <h1 class="text-2xl">Sign in form</h1>
+    <UFormField name="displayName">
+      <FormInput v-model="state.displayName">{{ t('sign.display-name')}}</FormInput>
+    </UFormField>
+    <UFormField name="email">
+      <FormInput v-model="state.email" type="email" trailing-icon="i-lucide-at-sign">{{ t('sign.email')}}</FormInput>
+    </UFormField>
+
+    <UFormField name="password">
+      <FormInputPassword v-model="state.password" type="password">{{ t('sign.password') }}</FormInputPassword>
+    </UFormField>
+    <UFormField name="repeatPassword">
+      <FormInputPassword v-model="state.repeatPassword" type="password">{{ t('sign.repeat') }}</FormInputPassword>
+    </UFormField>
+
+    <div class="flex gap-3 items-center">
+      <UButton type="submit">{{ t('sign.up-btn') }}</UButton>
+      <ULink :to="localePath('/signin')">{{ t('sign.in-btn') }}</ULink>
+    </div>
+  </UForm>
 </template>
