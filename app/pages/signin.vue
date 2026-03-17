@@ -38,8 +38,8 @@ async function onError(event: FormErrorEvent) {
 </script>
 
 <template>
-  <UForm :validate="validate" :state="state" class="space-y-4" @submit="onSubmit" @error="onError">
-    <h1 class="text-2xl">Sign in form</h1>
+  <UForm :validate="validate" :state="state" class="space-y-4" @submit.prevent="onSubmit" @error="onError">
+    <h1 class="text-2xl">{{ t('sign.in-btn') }}</h1>
     <UFormField name="email">
       <FormInput v-model="state.email" type="email" trailing-icon="i-lucide-at-sign">{{ t('sign.email')}}</FormInput>
     </UFormField>
@@ -49,10 +49,8 @@ async function onError(event: FormErrorEvent) {
     </UFormField>
 
     <div class="flex gap-3 items-center">
-      <UButton type="submit">
-        Submit
-      </UButton>
-      <ULink :to="localePath('/signup')">Sign up</ULink>
+      <UButton type="submit">{{ t('sign.in-btn') }}</UButton>
+      <ULink :to="localePath('/signup')">{{ t('sign.up-btn') }}</ULink>
     </div>
   </UForm>
 </template>

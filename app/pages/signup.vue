@@ -44,8 +44,8 @@ async function onError(event: FormErrorEvent) {
 </script>
 
 <template>
-  <UForm :validate="validate" :state="state" class="space-y-4" @submit="onSubmit" @error="onError">
-    <h1 class="text-2xl">Sign in form</h1>
+  <UForm :validate="validate" :state="state" class="space-y-4" @submit.prevent="onSubmit" @error="onError">
+    <h1 class="text-2xl">{{ t('sign.up-btn') }}</h1>
     <UFormField name="displayName">
       <FormInput v-model="state.displayName">{{ t('sign.display-name')}}</FormInput>
     </UFormField>

@@ -1,8 +1,8 @@
 <script setup>
 import 'slpy/dist/css/slpy-style.css'
 import { slpy } from 'slpy'
-import { geohashForLocation } from 'geofire-common'
-import { formField } from '#build/ui'
+import { distanceBetween, geohashForLocation, geohashQueryBounds } from 'geofire-common'
+import { collection, endAt, getDocs, getFirestore, orderBy, query, startAt, where } from 'firebase/firestore'
 
 const { t } = useI18n()
 
@@ -26,6 +26,7 @@ const state = ref({
     city: '',
     region: '',
     country: '',
+    radiusInM: 1000,
     tags: []
 })
 
@@ -61,31 +62,78 @@ watch(country, (newVal, oldVal) => {
     item.updateAutocomplete({ country: newVal, language })
 })
 
+function validate(state) {
+    const errors = []
+    if (!state.city) errors.push({ name: 'city', message: 'Required' })
+    if (!state.geohash) errors.push({ name: 'city', message: 'Select city from popup menu' })
+    if (!state.region) errors.push({ name: 'region', message: 'Required' })
+    if (!state.radiusInM) errors.push({ name: 'radiusInM', message: 'Required' })
+    if (!state.tags.length) errors.push({ name: 'tags', message: 'Required' })
+    return errors
+}
+async function onError(event) {
+    if (event?.errors?.[0]?.id) {
+        const element = document.getElementById(event.errors[0].id)
+        element?.focus()
+        element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+}
+
+const data = ref([])
+
+async function onSubmit() {
+
+    const center = [state.value.lat, state.value.lon]
+    const bounds = geohashQueryBounds(center, state.value.radiusInM)
+    const promises = []
+    for (const b of bounds) {
+        for (const t of state.value.tags) {
+            const q = query(collection(getFirestore(), 'posts'), orderBy('geohash'), where("tags", "array-contains", t), startAt(b[0]), endAt(b[1]))
+            promises.push(getDocs(q))
+        }
+    }
+    const snapshots = await Promise.all(promises)
+
+    const matchingDocs = []
+    for (const snap of snapshots) {
+        for (const doc of snap.docs) {
+            const lat = doc.get('lat')
+            const lon = doc.get('lon')
+            const distanceInKm = distanceBetween([lat, lon], center)
+            const distanceInM = distanceInKm * 1000
+            if (distanceInM <= state.value.radiusInM) {
+                matchingDocs.push(doc)
+            }
+        }
+    }
+
+    data.value = matchingDocs
+}
 </script>
 
 <template>
-    <form class="flex flex-col  gap-4" @submit.prevent="onSubmit">
-        <div>
-        <USelectMenu v-model="country" :items="items" size="xl" value-key="value" :icon="avatar" />
-            <UInput id="formInput" size="xl" v-model="state.city" placeholder="" :ui="{ base: 'peer' }">
-                <label
-                    class="pointer-events-none absolute left-0 -top-2.5 text-highlighted text-xs font-medium px-1.5 transition-all peer-focus:-top-2.5 peer-focus:text-highlighted peer-focus:text-xs peer-focus:font-medium peer-placeholder-shown:text-sm peer-placeholder-shown:text-dimmed peer-placeholder-shown:top-2.5 peer-placeholder-shown:font-normal">
-                    <span class="inline-flex bg-default px-1">{{ t('post.city-input') }}</span>
-                </label>
-            </UInput>
-            <UInput size="xl" v-model="state.region" placeholder="" :ui="{ base: 'peer' }">
-                <label
-                    class="pointer-events-none absolute left-0 -top-2.5 text-highlighted text-xs font-medium px-1.5 transition-all peer-focus:-top-2.5 peer-focus:text-highlighted peer-focus:text-xs peer-focus:font-medium peer-placeholder-shown:text-sm peer-placeholder-shown:text-dimmed peer-placeholder-shown:top-2.5 peer-placeholder-shown:font-normal">
-                    <span class="inline-flex bg-default px-1">{{ t('post.region-input') }}</span>
-                </label>
-            </UInput>
+    <UForm :validate="validate" :state="state" class="flex flex-col  gap-4" @submit.prevent="onSubmit" @error="onError">
+        <div class="flex space-x-4">
+            <USelectMenu v-model="country" :items="items" size="xl" value-key="value" :icon="avatar" />
+            <UFormField name="city">
+                <FormInput id="formInput" v-model="state.city">{{ t('post.city-input') }}</FormInput>
+            </UFormField>
+            <UFormField name="region">
+                <FormInput v-model="state.region">{{ t('post.region-input') }}</FormInput>
+            </UFormField>
         </div>
-        <UInputTags v-model="state.tags" size="xl" placeholder="" :ui="{ base: 'peer' }">
-            <label
-                class="pointer-events-none absolute left-0 -top-2.5 text-highlighted text-xs font-medium px-1.5 transition-all peer-focus:-top-2.5 peer-focus:text-highlighted peer-focus:text-xs peer-focus:font-medium peer-placeholder-shown:text-sm peer-placeholder-shown:text-dimmed peer-placeholder-shown:top-2.5 peer-placeholder-shown:font-normal">
-                <span class="inline-flex bg-default px-1">{{ t('post.tags-input') }}</span>
-            </label>
-        </UInputTags>
-        <UButton type="submit">Search</UButton>
-    </form>
+        <div class="flex space-x-4">
+            <UFormField name="tags">
+                <FormInputTags class="w-full" v-model="state.tags">{{ t('post.tags-input') }}</FormInputTags>
+            </UFormField>
+            <UFormField name="radiusInM">
+                <UInputNumber size="xl" v-model="state.radiusInM" :increment="false" :decrement="false" />
+            </UFormField>
+            <UButton type="submit">{{ t('search-btn') }}</UButton>
+        </div>
+    </UForm>
+
+    <ul>
+        <li v-for="doc in data" :key="doc.id">city: {{ doc.get('city') }} text: {{ doc.get('text') }} title: {{ doc.get('title') }}</li>
+    </ul>
 </template>
