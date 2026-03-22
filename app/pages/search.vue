@@ -102,7 +102,7 @@ async function onSubmit() {
             const distanceInKm = distanceBetween([lat, lon], center)
             const distanceInM = distanceInKm * 1000
             if (distanceInM <= state.value.radiusInM) {
-                matchingDocs.push(doc)
+                matchingDocs.push({ ...doc.data(), id: doc.id})
             }
         }
     }
@@ -133,7 +133,6 @@ async function onSubmit() {
         </div>
     </UForm>
 
-    <ul>
-        <li v-for="doc in data" :key="doc.id">city: {{ doc.get('city') }} text: {{ doc.get('text') }} title: {{ doc.get('title') }}</li>
-    </ul>
+    <!-- <li v-for="doc in data" :key="doc.id">city: {{ doc.city }} text: {{ doc.text }} title: {{ doc.title }}</li> -->
+    <LayoutPostCard :posts="data"></LayoutPostCard>
 </template>
